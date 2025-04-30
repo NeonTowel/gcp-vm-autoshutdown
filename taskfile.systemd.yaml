@@ -122,12 +122,11 @@ tasks:
 
   all:
     silent: true
-    deps:
-      - build-binary
-      - install-binary
-      - install-service
     desc: "Build, install the binary, and set up the SystemD service, but don't start it yet."
     cmds:
+      - task: build-binary
+      - task: install-binary
+      - task: install-service
       - |
         echo "SystemD service installed, but not started yet."
         echo "To start it, run 'task systemd:start' or 'sudo systemctl start auto_shutdown.service'"

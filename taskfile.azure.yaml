@@ -75,6 +75,18 @@ tasks:
         echo "✅ VM Name: $VM_NAME"
         echo "✅ Resource Group: $RESOURCE_GROUP"
         echo "✅ Task File: {{ .TASKFILE }}"
+        task -t "{{ .TASKFILE }}" preflight VM_NAME=$VM_NAME RESOURCE_GROUP=$RESOURCE_GROUP
+      - |
+        VM_METADATA=$(curl -s -H Metadata:true --noproxy "*" "http://169.254.169.254/metadata/instance?api-version=2021-01-01")
+        VM_NAME=$(echo "$VM_METADATA" | jq -r '.compute.name')
+        RESOURCE_GROUP=$(echo "$VM_METADATA" | jq -r '.compute.resourceGroupName')
+        if [ -z "$VM_NAME" ] || [ -z "$RESOURCE_GROUP" ]; then
+          echo "❌ Failed to retrieve VM Name or Resource Group"
+          exit 1
+        fi
+        echo "✅ VM Name: $VM_NAME"
+        echo "✅ Resource Group: $RESOURCE_GROUP"
+        echo "✅ Task File: {{ .TASKFILE }}"
         task -t "{{ .TASKFILE }}" install-service VM_NAME=$VM_NAME RESOURCE_GROUP=$RESOURCE_GROUP
     desc: "Install the Azure VM Deallocate service"
   
